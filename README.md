@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Photography Portfolio
 
-## Getting Started
+A minimal black & white photography portfolio. Next.js (App Router) + MongoDB + MinIO, with a
+GSAP-driven scroll/lightbox layer on the gallery.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js 16 (App Router, TypeScript), Tailwind v4, shadcn/ui
+- MongoDB + Mongoose for image/category/site metadata
+- MinIO (S3-compatible) for original image storage + generated variants
+- GSAP + ScrollTrigger + Flip for hero crossfade, scroll reveals, and the grid → lightbox transition
+- Single hardcoded admin, signed session cookie (no external auth library)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Copy the env file and fill in real secrets:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   cp .env.example .env.local
+   # generate a real SESSION_SECRET, e.g.:
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
 
-## Learn More
+2. Start MongoDB + MinIO:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   docker compose up -d
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Install deps and run the app:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-## Deploy on Vercel
+4. Log in at [http://localhost:3000/admin/login](http://localhost:3000/admin/login) with the
+   `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env.local`, then upload an image from `/admin`.
+   The MinIO console (bucket browser) is at [http://localhost:9001](http://localhost:9001).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How it's put together
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Public pages** (`/`, `/work`, `/work/[slug]`, `/about`, `/contact`) are Server Components —
+  no client JS is required to read any content, and each has real per-page metadata plus a
+  generated `/sitemap.xml` and `/robots.txt`.
+- **`/work` is the one place client JS is load-bearing**: `app/(site)/work/layout.tsx` renders
+  the gallery grid once and keeps it mounted across `/work ⇄ /work/[slug]` navigations, so
+  `components/gallery/work-gallery.tsx` can GSAP-Flip the clicked tile into the full detail view
+  and back. A direct load of `/work/[slug]` (shared link, no JS, crawler) still renders the full
+  detail page correctly — the Flip animation only fires for in-app navigations that have a
+  captured "from" tile rect.
+- **Admin** (`/admin/*`) is gated by `proxy.ts` (Next 16's replacement for `middleware.ts`) and by
+  an explicit `requireAdmin()`/`isAdminAuthenticated()` check inside every admin route handler,
+  since Server Actions bypass proxy matchers.
+- **Image pipeline**: browser uploads directly to MinIO via a presigned PUT URL
+  (`/api/admin/upload-url`), then `/api/admin/images` fetches the object back, computes a
+  blurhash and WebP variants (400/800/1600px) via `sharp`, and only then writes the Mongo doc.
+  Public serving goes through `/api/images/[key]`, which streams from MinIO with an immutable
+  cache header (object keys are content-hashed).
+
+## Known simplifications
+
+- Image processing (blurhash + variants) runs synchronously in the upload request — fine for a
+  low-volume single-admin site; a queue would be the next step at higher upload volume.
+- The display font defaults to Fraunces (`lib/fonts.ts`) as a free stand-in for PP Editorial New,
+  which has no CDN distribution. Swap to `next/font/local` there once you have licensed files.

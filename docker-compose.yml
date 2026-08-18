@@ -1,0 +1,35 @@
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: portfolio-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000" # API
+      - "9001:9001" # Console (web UI)
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    container_name: portfolio-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-portfolio}
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  minio_data:
+  mongo_data:
+
+# NOTE: the credentials above are placeholder DEFAULTS for local development only.
+# Set real values in a root .env file (see .env.example) for any non-local deployment,
+# and never commit that .env file.
