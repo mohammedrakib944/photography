@@ -36,7 +36,10 @@ export function SettingsForm({ initial }: { initial: Settings }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-lg flex-col gap-5">
+    <form
+      onSubmit={handleSubmit}
+      className="flex max-w-lg flex-col gap-5 rounded-2xl border border-border p-6 shadow-sm"
+    >
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="siteName">Site name</Label>
         <Input

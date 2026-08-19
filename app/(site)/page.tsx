@@ -1,7 +1,6 @@
 import { getAllImages, getCategories, getSiteSettings } from "@/lib/data";
-import { HeroBanner } from "@/components/hero-banner";
-import { FeaturedShowcase } from "@/components/gallery/featured-showcase";
-import { GalleryExplorer } from "@/components/gallery/gallery-explorer";
+import { HeroBanner } from "@/features/home";
+import { GalleryExplorer } from "@/features/gallery";
 
 export default async function Home() {
   const [settings, images, categories] = await Promise.all([
@@ -30,16 +29,27 @@ export default async function Home() {
   });
 
   const gridImages = images.map(toViewerImage);
-  const featuredImages = images.filter((img) => img.featured).map(toViewerImage);
-  const categoryItems = categories.map((c) => ({ _id: String(c._id), name: c.name, slug: c.slug }));
+  const featuredImages = images
+    .filter((img) => img.featured)
+    .map(toViewerImage);
+  const categoryItems = categories.map((c) => ({
+    _id: String(c._id),
+    name: c.name,
+    slug: c.slug,
+  }));
 
   return (
     <main className="flex flex-1 flex-col bg-background">
-      <HeroBanner siteName={settings.siteName} tagline={settings.tagline} />
+      <HeroBanner
+        siteName={settings.siteName}
+        tagline={settings.tagline}
+        featuredImages={featuredImages}
+      />
 
-      <FeaturedShowcase images={featuredImages} />
-
-      <section className="site-container py-12 md:py-16">
+      <section
+        id="gallery"
+        className="site-container py-12 md:py-16 scroll-mt-24"
+      >
         {gridImages.length > 0 ? (
           <GalleryExplorer images={gridImages} categories={categoryItems} />
         ) : (

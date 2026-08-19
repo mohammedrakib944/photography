@@ -1,6 +1,5 @@
 import { getAllImages, getCategories } from "@/lib/data";
-import { UploadForm } from "./upload-form";
-import { ImageTable } from "./image-table";
+import { UploadForm, ImageTable } from "@/features/admin";
 
 export default async function AdminPage() {
   const [images, categories] = await Promise.all([getAllImages(), getCategories()]);
@@ -25,8 +24,9 @@ export default async function AdminPage() {
 
   return (
     <div>
-      <h1 className="mb-1 font-heading text-xl tracking-wide">Images</h1>
-      <p className="mb-6 text-sm text-muted-foreground">
+      <span className="mb-3 block h-px w-10 bg-foreground/30" />
+      <h1 className="mb-1 font-heading text-2xl font-light tracking-tight">Images</h1>
+      <p className="mb-8 text-sm text-muted-foreground">
         Upload new photos or edit, reorder, and delete existing ones.
       </p>
       <div className="mb-8">

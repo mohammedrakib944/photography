@@ -1,7 +1,5 @@
-import { SiteNav } from "@/components/site-nav";
-import { SiteFooter } from "@/components/site-footer";
-import { ImageViewerProvider } from "@/components/gallery/image-viewer-context";
-import { ImageViewerModal } from "@/components/gallery/image-viewer-modal";
+import { SiteNav, SiteFooter } from "@/features/site-chrome";
+import { ImageViewerProvider, ImageViewerModal } from "@/features/gallery";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (

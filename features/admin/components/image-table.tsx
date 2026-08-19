@@ -63,35 +63,36 @@ export function ImageTable({
 
   if (images.length === 0) {
     return (
-      <p className="rounded-md border border-dashed border-border p-6 text-sm text-muted-foreground">
+      <p className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
         No images yet — upload one above to get started.
       </p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-md border border-border">
+    <div className="overflow-x-auto rounded-2xl border border-border shadow-sm">
       <table className="w-full min-w-[720px] border-collapse text-sm">
         <thead>
-          <tr className="border-b border-border bg-muted/50 text-left text-xs font-medium tracking-wide uppercase text-muted-foreground">
-            <th className="p-3">Preview</th>
-            <th className="p-3">Title</th>
-            <th className="p-3">Description</th>
-            <th className="p-3">Category</th>
-            <th className="p-3">Order</th>
-            <th className="p-3">Featured</th>
-            <th className="p-3 text-right">Actions</th>
+          <tr className="border-b border-border bg-muted/40 text-left text-xs font-medium tracking-[0.08em] uppercase text-muted-foreground">
+            <th className="p-3.5">Preview</th>
+            <th className="p-3.5">Title</th>
+            <th className="p-3.5">Description</th>
+            <th className="p-3.5">Category</th>
+            <th className="p-3.5">Order</th>
+            <th className="p-3.5">Featured</th>
+            <th className="p-3.5 text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
           {images.map((img) => (
-            <tr key={img._id} className="align-middle hover:bg-muted/30">
-              <td className="p-3">
+            <tr key={img._id} className="align-middle transition-colors hover:bg-muted/30">
+              <td className="p-3.5">
                 <GalleryImage
                   src={img.objectKey}
                   width={img.width}
                   height={img.height}
                   alt={img.title ?? ""}
+                  className="rounded-lg"
                   style={{ width: 64, height: 64, objectFit: "cover" }}
                 />
               </td>

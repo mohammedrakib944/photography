@@ -143,7 +143,7 @@ export function UploadForm({ categories }: { categories: CategoryOption[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border p-4">
+    <div className="flex flex-col gap-4 rounded-2xl border border-border p-5 shadow-sm">
       <div className="flex flex-wrap items-center gap-3">
         <Button type="button" variant="outline" onClick={() => inputRef.current?.click()}>
           Select images
@@ -166,8 +166,11 @@ export function UploadForm({ categories }: { categories: CategoryOption[] }) {
       {pending.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {pending.map((entry) => (
-            <div key={entry.id} className="flex flex-col gap-2 rounded-lg border border-border p-3">
-              <div className="relative overflow-hidden rounded-md">
+            <div
+              key={entry.id}
+              className="flex flex-col gap-2.5 rounded-xl border border-border p-3.5 transition-shadow hover:shadow-sm"
+            >
+              <div className="relative overflow-hidden rounded-lg">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={entry.previewUrl} alt="" className="h-40 w-full object-cover" />
                 {entry.status !== "pending" && (

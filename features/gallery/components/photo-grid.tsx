@@ -1,9 +1,9 @@
 "use client";
 
 import { GalleryImage } from "@/components/gallery-image";
-import { useImageViewer, type ViewerImage } from "@/components/gallery/image-viewer-context";
+import { useImageViewer, type ViewerImage } from "@/features/gallery/components/image-viewer-context";
 
-const GRID_CLASS = "columns-1 gap-5 sm:columns-2 lg:columns-3 xl:columns-4";
+const GRID_CLASS = "columns-1 gap-5 sm:columns-2 lg:columns-3";
 
 function isModifiedClick(e: React.MouseEvent) {
   return e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
@@ -11,8 +11,7 @@ function isModifiedClick(e: React.MouseEvent) {
 
 /**
  * Renders each photo as a card. Returns a Fragment (no wrapper element) so it
- * can be dropped directly inside a ScrollReveal container, whose stagger
- * animation needs direct DOM access to each card.
+ * can be dropped directly inside the masonry columns container.
  *
  * Clicking a card opens the shared ImageViewerModal in place (no URL change,
  * no navigation) — the href is kept so the image stays a real, crawlable,
@@ -33,7 +32,7 @@ export function PhotoGrid({ images }: { images: ViewerImage[] }) {
             e.preventDefault();
             open(images, index);
           }}
-          className="group relative mb-5 block break-inside-avoid overflow-hidden rounded-xl bg-muted shadow-sm transition-shadow duration-300 hover:shadow-lg"
+          className="group relative mb-5 block break-inside-avoid overflow-hidden rounded-2xl bg-muted ring-1 ring-black/[0.03] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_rgba(0,0,0,0.35)]"
         >
           <GalleryImage
             src={img.objectKey}
@@ -41,10 +40,17 @@ export function PhotoGrid({ images }: { images: ViewerImage[] }) {
             height={img.height}
             alt={img.title ?? ""}
             style={{ width: "100%", height: "auto", display: "block" }}
-            className="transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            className="transition-transform duration-700 ease-out group-hover:scale-[1.05]"
           />
-          <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-black/50 via-black/0 to-black/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-            {img.title && <p className="p-4 text-sm font-medium text-white">{img.title}</p>}
+          <div className="pointer-events-none absolute inset-0 flex flex-col justify-end gap-1 bg-gradient-to-t from-black/70 via-black/0 to-black/0 p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            {img.title && (
+              <p className="font-heading text-base font-light tracking-wide text-white">{img.title}</p>
+            )}
+            {(img.location || img.category?.name) && (
+              <p className="text-xs tracking-[0.08em] text-white/75 uppercase">
+                {[img.location, img.category?.name].filter(Boolean).join(" · ")}
+              </p>
+            )}
           </div>
         </a>
       ))}
