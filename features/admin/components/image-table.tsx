@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { GalleryImage } from "@/components/gallery-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useImageTableActions, NONE_VALUE } from "@/features/admin/hooks/use-image-table-actions";
 
 type ImageRow = {
   _id: string;
@@ -29,8 +28,6 @@ type ImageRow = {
 
 type CategoryOption = { _id: string; name: string };
 
-const NONE_VALUE = "__none__";
-
 export function ImageTable({
   images,
   categories,
@@ -38,28 +35,7 @@ export function ImageTable({
   images: ImageRow[];
   categories: CategoryOption[];
 }) {
-  const router = useRouter();
-  const [pendingId, setPendingId] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
-
-  async function saveImage(id: string, updates: Record<string, unknown>) {
-    setPendingId(id);
-    await fetch(`/api/admin/images/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
-    });
-    setPendingId(null);
-    startTransition(() => router.refresh());
-  }
-
-  async function deleteImage(id: string) {
-    if (!confirm("Delete this image permanently?")) return;
-    setPendingId(id);
-    await fetch(`/api/admin/images/${id}`, { method: "DELETE" });
-    setPendingId(null);
-    startTransition(() => router.refresh());
-  }
+  const { pendingId, saveImage, deleteImage } = useImageTableActions();
 
   if (images.length === 0) {
     return (
@@ -114,13 +90,18 @@ export function ImageTable({
               </td>
               <td className="p-3">
                 <Select
+                  key={img.category?._id ?? NONE_VALUE}
                   defaultValue={img.category?._id ?? NONE_VALUE}
                   onValueChange={(value) =>
                     saveImage(img._id, { categoryId: value === NONE_VALUE ? null : value })
                   }
                 >
                   <SelectTrigger className="min-w-[140px]">
-                    <SelectValue placeholder="Uncategorized" />
+                    <SelectValue placeholder="Uncategorized">
+                      {(value: string) =>
+                        categories.find((c) => c._id === value)?.name ?? "Uncategorized"
+                      }
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={NONE_VALUE}>Uncategorized</SelectItem>

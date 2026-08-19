@@ -162,6 +162,6 @@
 
   /* Shared page container so content never stretches edge-to-edge on wide screens. */
   .site-container {
-    @apply mx-auto max-w-[1100px] px-4 md:px-8;
+    @apply mx-auto w-full max-w-[1100px] px-4 md:px-8;
   }
 }

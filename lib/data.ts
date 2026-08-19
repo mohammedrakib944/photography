@@ -9,6 +9,7 @@ export async function getSiteSettings() {
   return (
     settings ?? {
       siteName: "Photography Portfolio",
+      logoObjectKey: undefined,
       tagline: "Black & white photography",
       bioText: "",
       contactEmail: "",

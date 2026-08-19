@@ -14,6 +14,7 @@ export default async function SettingsPage() {
       <SettingsForm
         initial={{
           siteName: settings.siteName,
+          logoObjectKey: settings.logoObjectKey,
           tagline: settings.tagline,
           bioText: settings.bioText,
           contactEmail: settings.contactEmail,

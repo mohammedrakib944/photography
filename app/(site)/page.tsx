@@ -43,6 +43,7 @@ export default async function Home() {
       <HeroBanner
         siteName={settings.siteName}
         tagline={settings.tagline}
+        instagramUrl={(settings.socialLinks as Record<string, string> | undefined)?.instagram}
         featuredImages={featuredImages}
       />
 

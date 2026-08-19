@@ -8,6 +8,7 @@ const CONTENT_TYPES: Record<string, string> = {
   jpeg: "image/jpeg",
   png: "image/png",
   tiff: "image/tiff",
+  svg: "image/svg+xml",
 };
 
 export async function GET(request: Request, context: { params: Promise<{ key: string }> }) {

@@ -1,24 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useScrolled } from "@/features/site-chrome/hooks/use-scrolled";
 
 const LINKS = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
-export function NavShell({ siteName }: { siteName: string }) {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 24);
-    }
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+export function NavShell({ siteName, logoObjectKey }: { siteName: string; logoObjectKey?: string }) {
+  const scrolled = useScrolled();
 
   return (
     <header
@@ -33,8 +24,17 @@ export function NavShell({ siteName }: { siteName: string }) {
           scrolled ? "py-3" : "py-5"
         }`}
       >
-        <Link href="/" className="font-heading text-base font-medium tracking-wide">
-          {siteName}
+        <Link href="/" className="flex items-center font-heading text-base font-medium tracking-wide">
+          {logoObjectKey ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`/api/images/${encodeURIComponent(logoObjectKey)}`}
+              alt={siteName}
+              className="h-8 w-auto object-contain"
+            />
+          ) : (
+            siteName
+          )}
         </Link>
         <nav className="flex gap-7">
           {LINKS.map((link) => (

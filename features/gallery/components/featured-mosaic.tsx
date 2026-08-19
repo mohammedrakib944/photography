@@ -1,7 +1,10 @@
 "use client";
 
 import { GalleryImage } from "@/components/gallery-image";
-import { useImageViewer, type ViewerImage } from "@/features/gallery/components/image-viewer-context";
+import {
+  useImageViewer,
+  type ViewerImage,
+} from "@/features/gallery/components/image-viewer-context";
 
 function Tile({
   image,
@@ -51,26 +54,56 @@ export function FeaturedMosaic({ images }: { images: ViewerImage[] }) {
 
   if (shown.length === 1) {
     return (
-      <div className="aspect-[4/5] w-[380px]">
-        <Tile image={shown[0]} images={images} index={0} className="h-full w-full" />
+      <div className="aspect-4/5 w-full max-w-110">
+        <Tile
+          image={shown[0]}
+          images={images}
+          index={0}
+          className="h-full w-full"
+        />
       </div>
     );
   }
 
   if (shown.length === 2) {
     return (
-      <div className="grid h-[420px] w-[420px] grid-cols-2 gap-4">
-        <Tile image={shown[0]} images={images} index={0} className="h-full w-full" />
-        <Tile image={shown[1]} images={images} index={1} className="h-full w-full" />
+      <div className="grid aspect-square w-full max-w-110 grid-cols-2 gap-3 sm:gap-4">
+        <Tile
+          image={shown[0]}
+          images={images}
+          index={0}
+          className="h-full w-full"
+        />
+        <Tile
+          image={shown[1]}
+          images={images}
+          index={1}
+          className="h-full w-full"
+        />
       </div>
     );
   }
 
   return (
-    <div className="grid h-[440px] w-[420px] grid-cols-2 grid-rows-2 gap-4">
-      <Tile image={shown[0]} images={images} index={0} className="row-span-2 h-full w-full" />
-      <Tile image={shown[1]} images={images} index={1} className="h-full w-full" />
-      <Tile image={shown[2]} images={images} index={2} className="h-full w-full" />
+    <div className="grid aspect-square w-full max-w-110 grid-cols-2 grid-rows-2 gap-3 sm:gap-4">
+      <Tile
+        image={shown[0]}
+        images={images}
+        index={0}
+        className="row-span-2 h-full w-full"
+      />
+      <Tile
+        image={shown[1]}
+        images={images}
+        index={1}
+        className="h-full w-full"
+      />
+      <Tile
+        image={shown[2]}
+        images={images}
+        index={2}
+        className="h-full w-full"
+      />
     </div>
   );
 }

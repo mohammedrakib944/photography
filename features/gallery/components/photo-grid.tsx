@@ -3,7 +3,7 @@
 import { GalleryImage } from "@/components/gallery-image";
 import { useImageViewer, type ViewerImage } from "@/features/gallery/components/image-viewer-context";
 
-const GRID_CLASS = "columns-1 gap-5 sm:columns-2 lg:columns-3";
+const GRID_CLASS = "columns-2 gap-3 sm:gap-5 lg:columns-3";
 
 function isModifiedClick(e: React.MouseEvent) {
   return e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
@@ -17,8 +17,20 @@ function isModifiedClick(e: React.MouseEvent) {
  * no navigation) — the href is kept so the image stays a real, crawlable,
  * right-click-able link, but a plain left click intercepts it via
  * preventDefault and opens the viewer instead.
+ *
+ * `images` is what actually gets rendered (e.g. a lazily-grown page of the
+ * full result set); `allImages` — the complete filtered set — is what the
+ * viewer opens against, so prev/next navigation isn't limited to whatever
+ * has been mounted so far. Defaults to `images` when the caller has nothing
+ * more to page through.
  */
-export function PhotoGrid({ images }: { images: ViewerImage[] }) {
+export function PhotoGrid({
+  images,
+  allImages = images,
+}: {
+  images: ViewerImage[];
+  allImages?: ViewerImage[];
+}) {
   const { open } = useImageViewer();
 
   return (
@@ -30,9 +42,9 @@ export function PhotoGrid({ images }: { images: ViewerImage[] }) {
           onClick={(e) => {
             if (isModifiedClick(e)) return;
             e.preventDefault();
-            open(images, index);
+            open(allImages, index);
           }}
-          className="group relative mb-5 block break-inside-avoid overflow-hidden rounded-2xl bg-muted ring-1 ring-black/[0.03] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_rgba(0,0,0,0.35)]"
+          className="group relative mb-3 block break-inside-avoid overflow-hidden rounded-2xl bg-muted ring-1 ring-black/[0.03] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_rgba(0,0,0,0.35)] sm:mb-5"
         >
           <GalleryImage
             src={img.objectKey}

@@ -17,7 +17,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const body = await request.json();
-  const { siteName, tagline, bioText, contactEmail, socialLinks } = body;
+  const { siteName, logoObjectKey, tagline, bioText, contactEmail, socialLinks } = body;
 
   if (!siteName) {
     return NextResponse.json({ error: "siteName is required" }, { status: 400 });
@@ -26,7 +26,7 @@ export async function PUT(request: Request) {
   await connectDB();
   const settings = await SiteSettings.findByIdAndUpdate(
     "singleton",
-    { $set: { siteName, tagline, bioText, contactEmail, socialLinks } },
+    { $set: { siteName, logoObjectKey, tagline, bioText, contactEmail, socialLinks } },
     { new: true, upsert: true }
   );
   return NextResponse.json({ settings });

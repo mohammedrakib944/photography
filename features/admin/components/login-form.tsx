@@ -1,35 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLoginForm } from "@/features/admin/hooks/use-login-form";
 
 export function LoginForm() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-    const form = new FormData(e.currentTarget);
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
-    });
-    if (!res.ok) {
-      const { error } = await res.json().catch(() => ({ error: "Login failed" }));
-      setError(error);
-      setSubmitting(false);
-      return;
-    }
-    router.push("/admin");
-    router.refresh();
-  }
+  const { error, submitting, handleSubmit } = useLoginForm();
 
   return (
     <div className="mx-auto flex max-w-xs flex-1 flex-col justify-center gap-8 px-4 py-16">
