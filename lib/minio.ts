@@ -45,3 +45,7 @@ export async function putObjectBuffer(objectKey: string, buffer: Buffer, content
 export async function statObject(objectKey: string) {
   return minioClient.statObject(MINIO_BUCKET, objectKey);
 }
+
+export async function removeObject(objectKey: string) {
+  await minioClient.removeObject(MINIO_BUCKET, objectKey);
+}

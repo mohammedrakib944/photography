@@ -35,7 +35,11 @@ export function GalleryExplorer({
   const [category, setCategory] = useState<string | undefined>(undefined);
 
   const filteredImages = useGalleryFilter(images, category, query);
-  const { visibleItems: visibleImages, hasMore, sentinelRef } = usePaginatedList(filteredImages, PAGE_SIZE);
+  const {
+    visibleItems: visibleImages,
+    hasMore,
+    sentinelRef,
+  } = usePaginatedList(filteredImages, PAGE_SIZE);
 
   return (
     <div>
@@ -58,7 +62,7 @@ export function GalleryExplorer({
             className={cn(
               "rounded-full border border-border px-4 py-1.5 text-sm transition-all duration-200 hover:border-foreground/30",
               !category &&
-                "border-foreground bg-foreground text-background shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] hover:bg-foreground/90"
+                "border-foreground bg-foreground text-background shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] hover:bg-foreground/90",
             )}
           >
             All
@@ -71,7 +75,7 @@ export function GalleryExplorer({
               className={cn(
                 "rounded-full border border-border px-4 py-1.5 text-sm transition-all duration-200 hover:border-foreground/30",
                 category === c.slug &&
-                  "border-foreground bg-foreground text-background shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] hover:bg-foreground/90"
+                  "border-foreground bg-foreground text-background shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] hover:bg-foreground/90",
               )}
             >
               {c.name}

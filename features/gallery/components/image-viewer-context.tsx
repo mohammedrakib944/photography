@@ -16,7 +16,7 @@ export type ViewerImage = {
   category?: { name: string; slug: string } | null;
 };
 
-type ViewerState = { images: ViewerImage[]; index: number } | null;
+export type ViewerState = { images: ViewerImage[]; index: number } | null;
 
 type ViewerContextValue = {
   state: ViewerState;

@@ -23,6 +23,7 @@ export function ImageViewerModal() {
   const bottomBarRef = useRef<HTMLDivElement>(null);
   const navBarRef = useRef<HTMLDivElement>(null);
 
+  const isOpen = Boolean(state);
   const image = state ? state.images[state.index] : null;
 
   const chromeHeight = useChromeHeight([bottomBarRef, navBarRef], `${image?._id}-${state?.images.length}`);
@@ -33,9 +34,9 @@ export function ImageViewerModal() {
   );
   const { zoomed, pan, boxRef, dragging, moved, toggleZoom, onPointerDown, onPointerMove, onPointerUp } =
     useImageZoomPan(ZOOM_SCALE, image?._id);
-  useModalKeyboardNav(Boolean(image), { close, next, prev });
+  useModalKeyboardNav(isOpen, { close, next, prev });
 
-  if (!image) return null;
+  if (!isOpen || !image) return null;
 
   const sizeLabel = formatBytes(image.sizeBytes);
 
@@ -103,7 +104,7 @@ export function ImageViewerModal() {
                 height={image.height}
                 alt={image.title ?? ""}
                 preload
-                onClick={() => !moved.current && toggleZoom()}
+                onClick={(e) => !moved.current && toggleZoom(e.clientX, e.clientY)}
                 className="block h-full w-full select-none"
                 style={{
                   objectFit: "contain",
@@ -126,7 +127,7 @@ export function ImageViewerModal() {
           <button
             type="button"
             aria-label={zoomed ? "Zoom out" : "Zoom in"}
-            onClick={toggleZoom}
+            onClick={() => toggleZoom()}
             className="absolute right-4 bottom-4 flex size-9 items-center justify-center rounded-full border border-border/50 bg-background/60 text-foreground backdrop-blur transition-colors hover:bg-background/90 md:right-6 md:bottom-6"
           >
             {zoomed ? <ZoomOut className="size-4" /> : <ZoomIn className="size-4" />}

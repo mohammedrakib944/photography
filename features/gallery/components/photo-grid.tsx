@@ -1,7 +1,10 @@
 "use client";
 
 import { GalleryImage } from "@/components/gallery-image";
-import { useImageViewer, type ViewerImage } from "@/features/gallery/components/image-viewer-context";
+import {
+  useImageViewer,
+  type ViewerImage,
+} from "@/features/gallery/components/image-viewer-context";
 
 const GRID_CLASS = "columns-2 gap-3 sm:gap-5 lg:columns-3";
 
@@ -44,7 +47,7 @@ export function PhotoGrid({
             e.preventDefault();
             open(allImages, index);
           }}
-          className="group relative mb-3 block break-inside-avoid overflow-hidden rounded-2xl bg-muted ring-1 ring-black/[0.03] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_rgba(0,0,0,0.35)] sm:mb-5"
+          className="group relative mb-3 block break-inside-avoid overflow-hidden rounded-lg bg-muted ring-1 ring-black/[0.03] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_rgba(0,0,0,0.35)] sm:mb-5"
         >
           <GalleryImage
             src={img.objectKey}
@@ -56,7 +59,9 @@ export function PhotoGrid({
           />
           <div className="pointer-events-none absolute inset-0 flex flex-col justify-end gap-1 bg-gradient-to-t from-black/70 via-black/0 to-black/0 p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             {img.title && (
-              <p className="font-heading text-base font-light tracking-wide text-white">{img.title}</p>
+              <p className="font-heading text-base font-light tracking-wide text-white">
+                {img.title}
+              </p>
             )}
             {(img.location || img.category?.name) && (
               <p className="text-xs tracking-[0.08em] text-white/75 uppercase">

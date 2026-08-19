@@ -2,11 +2,45 @@ import { NextResponse } from "next/server";
 import sharp from "sharp";
 import { encode } from "blurhash";
 import { isAdminAuthenticated } from "@/lib/session";
-import { getObjectBuffer, putObjectBuffer } from "@/lib/minio";
+import { getObjectBuffer, putObjectBuffer, removeObject } from "@/lib/minio";
 import { connectDB } from "@/lib/mongodb";
 import Image from "@/models/Image";
 
 const VARIANT_WIDTHS = [400, 800, 1600];
+const MAX_ORIGINAL_BYTES = 5 * 1024 * 1024; // 5MB
+const COMPRESS_QUALITY_STEPS = [90, 80, 70, 60, 50, 40];
+
+/**
+ * Re-encodes an over-size original as mozjpeg, stepping quality down until it
+ * fits under MAX_ORIGINAL_BYTES (or the quality floor is hit) — resolution is
+ * never touched, only compression. SVGs are vector and left alone. Non-jpeg
+ * sources land on a new `.jpg` key (the served content-type is derived from
+ * the extension), and the oversized original is removed from storage.
+ */
+async function compressOriginal(objectKey: string, buffer: Buffer) {
+  if (buffer.length <= MAX_ORIGINAL_BYTES) {
+    return { objectKey, buffer };
+  }
+
+  const ext = objectKey.split(".").pop()?.toLowerCase();
+  if (ext === "svg") {
+    return { objectKey, buffer };
+  }
+
+  let compressed = buffer;
+  for (const quality of COMPRESS_QUALITY_STEPS) {
+    compressed = await sharp(buffer).rotate().jpeg({ quality, mozjpeg: true }).toBuffer();
+    if (compressed.length <= MAX_ORIGINAL_BYTES) break;
+  }
+
+  const finalKey = ext === "jpg" || ext === "jpeg" ? objectKey : `${objectKey.split(".")[0]}.jpg`;
+  await putObjectBuffer(finalKey, compressed, "image/jpeg");
+  if (finalKey !== objectKey) {
+    await removeObject(objectKey);
+  }
+
+  return { objectKey: finalKey, buffer: compressed };
+}
 
 async function computeBlurhash(buffer: Buffer) {
   const { data, info } = await sharp(buffer)
@@ -51,17 +85,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "objectKey, width, and height are required" }, { status: 400 });
   }
 
-  const buffer = await getObjectBuffer(objectKey);
-  const [blurhash] = await Promise.all([computeBlurhash(buffer), generateVariants(objectKey, buffer)]);
+  const rawBuffer = await getObjectBuffer(objectKey);
+  const { objectKey: finalObjectKey, buffer } = await compressOriginal(objectKey, rawBuffer);
+  const [blurhash] = await Promise.all([computeBlurhash(buffer), generateVariants(finalObjectKey, buffer)]);
 
   await connectDB();
 
-  const baseSlug = objectKey.split(".")[0];
+  const baseSlug = finalObjectKey.split(".")[0];
   const doc = await Image.create({
     title,
     description,
     slug: baseSlug,
-    objectKey,
+    objectKey: finalObjectKey,
     width,
     height,
     sizeBytes: buffer.length,
